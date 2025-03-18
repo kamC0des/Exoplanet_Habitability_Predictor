@@ -107,8 +107,8 @@ def neural_network_training(iterations=1000, learning_rate=0.01):
     train_data, test_data = split_train_and_test(df)
     X = np.array(train_data[["pl_eqt","st_teff","pl_orbsmax"]])
     Y = np.array(train_data["habitable"])
-    #X has shape 156,3
-    #Y has shape 156,
+    #X has shape 140,3
+    #Y has shape 140,
     '''print(X.shape)
     print(Y.shape)'''
     for i in range(iterations):
@@ -123,9 +123,9 @@ def neural_network_training(iterations=1000, learning_rate=0.01):
 def forward_propagation(X):
     global W1, b1, W2, b2
     # Compute activations
-    Z1 = np.dot(X, W1) + b1 # produces a (156,2) matrix meaning all 156 training rows map to two hidden neurons
+    Z1 = np.dot(X, W1) + b1 # produces a (140,2) matrix meaning all 140 training rows map to two hidden neurons
     A1 = relu(Z1) # Activation function at hidden layer
-    Z2 = np.dot(A1, W2) + b2 #produces a (156,1) matrix meaning all 156 training rows map to one output neuron
+    Z2 = np.dot(A1, W2) + b2 #produces a (140,1) matrix meaning all 140 training rows map to one output neuron
     A2 = sigmoid(Z2) #Activation function at output layer to determine 0 or 1 for each entry which corresponds to habitable/not
 
     return Z1, A1, Z2, A2
@@ -138,15 +138,15 @@ def compute_loss(Y, A2):
     return loss
 def backward_propagation(X, Y, Z1, A1, Z2, A2, learning_rate=0.01):
     global W1, b1, W2, b2
-    m = X.shape[0] #156 #number of exoplanets
+    m = X.shape[0] #140 #number of exoplanets
 
     #compute gradients
-    dZ2 = A2 - Y.reshape(140,1) # derivative of loss w.r.t Z2
-    dW2 = np.dot(A1.T, dZ2) / m # Gradient of W2 (156,2) transpose = (2,156) * (156,1) == (2,1) = same shape as weight 2
+    dZ2 = A2 - Y.reshape(m,1) # derivative of loss w.r.t Z2
+    dW2 = np.dot(A1.T, dZ2) / m # Gradient of W2 (140,2) transpose = (2,140) * (140,1) == (2,1) = same shape as weight 2
     db2 = np.sum(dZ2, axis=0, keepdims=True) / m #Gradient of b2
 
-    dZ1 = np.dot(dZ2, W2.T) * relu_derivative(Z1) # Backdrop through ReLU #dZ2 = (156, 1)  W2 = (1, 2) dot product == (156, 2)
-    dW1 = np.dot(X.T, dZ1) / m #Gradient of W1 #X.T = (3,156) dZ1 = (156,2) dot product = (3,2)
+    dZ1 = np.dot(dZ2, W2.T) * relu_derivative(Z1) # Backdrop through ReLU #dZ2 = (140, 1)  W2 = (1, 2) dot product == (140, 2)
+    dW1 = np.dot(X.T, dZ1) / m #Gradient of W1 #X.T = (3,140) dZ1 = (140,2) dot product = (3,2)
     db1 = np.sum(dZ1, axis=0, keepdims=True) / m  #Gradient of b1
 
     #Update weights and biases using Gradient Descent
